@@ -13,6 +13,13 @@ A high-performance, stateless Spring Boot microservice designed to regulate auto
 ### 🛑 Phase 2: Horizontal Cap & Cooldowns
 * **Horizontal Cap:** Strictly limits a post to 100 total bot replies.
 * **Intra-Thread Cooldown:** Prevents a bot from replying to the same human for 10 minutes.
+* ## 🔒 Atomic Locks & Thread Safety (Phase 2)
+To survive the stress test of 200 concurrent requests without letting database commits exceed the 100-reply cap, we guaranteed thread safety by relying entirely on **Redis Atomic Operations** rather than Java-level synchronization.
+
+* **No Race Conditions:** We used the Redis `INCR` (`opsForValue().increment()`) command. Because Redis is single-threaded, it processes increment operations sequentially. Even if 200 requests arrive at the exact same millisecond, Redis evaluates them one by one.
+* **Atomic Rollbacks:** If the incremented counter exceeds 100, the system immediately decrements it back and blocks the request before it can ever touch the PostgreSQL database.
+* **Stateless Consistency:** By avoiding Java `HashMap` or localized locks, this safety net scales perfectly if we deploy multiple instances of this microservice behind a load balancer.
+
 
 ### 🔔 Phase 3: Smart Notification Batching
 * **Throttling:** Checks for active user cooldowns.
