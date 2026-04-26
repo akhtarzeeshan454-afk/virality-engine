@@ -15,9 +15,9 @@ A high-performance, stateless Spring Boot microservice designed to regulate auto
 * **Intra-Thread Cooldown:** Prevents a bot from replying to the same human for 10 minutes.
 
 ### 🔔 Phase 3: Smart Notification Batching
-* **Throttling:** Checks for active 15-minute user cooldowns.
+* **Throttling:** Checks for active user cooldowns.
 * **Aggregation:** Batches rapid alerts into dedicated Redis lists.
-* **Cron Sweeper:** Summarizes and flushes pending notifications every 5 minutes.
+* **Cron Sweeper:** Summarizes and flushes pending notifications.
 
 ---
 
